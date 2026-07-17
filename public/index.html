@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Audio annotation tool for NLI datasets - record audio for premise-hypothesis pairs">
+  <title>NewsNLI Audio Annotator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header" id="appHeader">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <h1>NewsNLI Annotator</h1>
+      </div>
+      <div class="header-right" id="headerStats" style="display:none;">
+        <div class="stat-pill" id="progressPill">
+          <span class="stat-label">Progress</span>
+          <span class="stat-value" id="progressText">0 / 0</span>
+        </div>
+        <div class="stat-pill accent">
+          <span class="stat-label">File</span>
+          <span class="stat-value" id="fileNameDisplay">—</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Upload Screen -->
+    <main class="screen upload-screen" id="uploadScreen">
+      <div class="upload-hero">
+        <div class="upload-icon-wrapper">
+          <div class="upload-icon-ring"></div>
+          <div class="upload-icon-ring delay-1"></div>
+          <div class="upload-icon-ring delay-2"></div>
+          <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <h2>Upload Your Dataset</h2>
+        <p class="upload-subtitle">Drop a CSV file with <strong>premise</strong>, <strong>hypothesis</strong>, and <strong>category</strong> columns</p>
+        
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="csvFileInput" accept=".csv" hidden>
+          <div class="drop-zone-content">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span>Click or drag CSV file here</span>
+          </div>
+        </div>
+
+        <!-- Resume Section -->
+        <div class="resume-section" id="resumeSection" style="display:none;">
+          <div class="resume-divider">
+            <span>or resume previous session</span>
+          </div>
+          <div class="resume-cards" id="resumeCards"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Annotation Screen -->
+    <main class="screen annotation-screen" id="annotationScreen" style="display:none;">
+      <!-- Progress Bar -->
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+      </div>
+
+      <!-- Sample Card -->
+      <div class="sample-card" id="sampleCard">
+        <div class="sample-number-badge" id="sampleBadge">Sample 1</div>
+        
+        <div class="card-section">
+          <div class="card-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Premise
+          </div>
+          <div class="card-text premise-text" id="premiseText">—</div>
+        </div>
+
+        <div class="card-divider"></div>
+
+        <div class="card-section">
+          <div class="card-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            Hypothesis
+          </div>
+          <div class="card-text hypothesis-text" id="hypothesisText">—</div>
+        </div>
+
+        <div class="card-divider"></div>
+
+        <div class="card-section category-section">
+          <div class="card-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 2 7l10 5 10-5-10-5Z"/>
+              <path d="m2 17 10 5 10-5"/>
+              <path d="m2 12 10 5 10-5"/>
+            </svg>
+            Category
+          </div>
+          <div class="category-badge" id="categoryBadge">—</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Fixed Right Sidebar (record controls) -->
+    <aside class="fixed-sidebar" id="fixedSidebar" style="display:none;">
+      <div class="sidebar-inner">
+        <!-- Record Button Area -->
+        <div class="record-area">
+          <p class="record-instruction" id="recordInstruction">Hover to record</p>
+          <div class="record-btn-wrapper">
+            <div class="record-pulse" id="recordPulse"></div>
+            <button class="record-btn" id="recordBtn" aria-label="Record audio">
+              <svg class="mic-icon" id="micIcon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+              <div class="recording-wave" id="recordingWave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </button>
+          </div>
+          <div class="record-timer" id="recordTimer" style="display:none;">
+            <div class="timer-dot"></div>
+            <span id="timerText">0:00</span>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-controls">
+          <button class="nav-btn" id="prevBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Prev
+          </button>
+          <button class="nav-btn" id="skipBtn">
+            Skip
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sample status dots -->
+        <div class="sample-status-bar" id="sampleStatusBar"></div>
+      </div>
+    </aside>
+
+    <!-- Completion Screen -->
+    <main class="screen complete-screen" id="completeScreen" style="display:none;">
+      <div class="complete-content">
+        <div class="complete-icon">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2>All Done!</h2>
+        <p>You've completed all <span id="totalCompleted">0</span> samples.</p>
+        <p class="complete-subtext">Audio files are saved in the <code id="completeFolderName">recordings</code> folder.</p>
+        <button class="primary-btn" id="newSessionBtn">Start New Session</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js?v=2"></script>
+</body>
+</html>
