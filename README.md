@@ -2,8 +2,6 @@
 
 A lightweight, local web application designed for dataset annotators to record high-quality speech samples for Natural Language Inference (NLI) sentence pairs. Built with **FastAPI** (Python) on the backend and **Vanilla HTML/CSS/JS** on the frontend, featuring a beautiful dark-mode interface with micro-animations.
 
----
-
 ## Key Features
 
 - **CSV Dataset Uploading:** Drag and drop your NLI dataset to parse instantly.
@@ -11,8 +9,6 @@ A lightweight, local web application designed for dataset annotators to record h
 - **Session Auto-Resume:** Tracks annotator progress. If they reopen the app or reload the page, they pick up right where they left off.
 - **Organized Local Storage:** Automatically creates directories named after the uploaded CSV file inside the `recordings/` folder.
 - **Automated Excel-Ready Manifest:** Saves audio files dynamically as `sample_{number}.webm` and automatically generates/updates an `annotations.csv` file inside the dataset's folder. The audio paths in this sheet are written as Excel-ready `=HYPERLINK()` formulas for one-click listening.
-
----
 
 ## Getting Started
 
@@ -39,7 +35,6 @@ http://localhost:3000
 ```
 https://youtu.be/-hamYYG2wY4
 ```
----
 
 ## Dataset Format
 
@@ -70,8 +65,6 @@ The output manifest file matches each recording back to its original row:
 | 1 | Sentence... | Another sentence... | Neutral | `=HYPERLINK("sample_1.webm", "sample_1.webm")` |
 
 *(Opening this file in Microsoft Excel or Google Sheets converts the `audio_path` cells into clickable play links.)*
-
----
 
 ## Technical Stack
 - **Backend:** FastAPI (Starlette + Uvicorn)
